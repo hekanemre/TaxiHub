@@ -35,6 +35,17 @@ func NewCreateDriverHandler(repo Repository) *CreateDriverHandler {
 	}
 }
 
+// CreateDriver godoc
+// @Summary      Create a new driver
+// @Description  Creates a new driver with the provided details.
+// @Tags         drivers
+// @Accept       json
+// @Produce      json
+// @Param        driver  body      CreateDriverRequest  true  "Driver creation data"
+// @Success      200  {object}  CreateDriverResponse
+// @Failure 400 {object} ErrorResponse "Invalid request"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router       /drivers/create [post]
 func (h *CreateDriverHandler) Handle(ctx context.Context, req *CreateDriverRequest) (*CreateDriverResponse, error) {
 
 	driver := &domain.Driver{

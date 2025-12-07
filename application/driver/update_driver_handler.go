@@ -32,6 +32,17 @@ func NewUpdateDriverHandler(repo Repository) *UpdateDriverHandler {
 	}
 }
 
+// UpdateDriver godoc
+// @Summary      Update an existing driver
+// @Description  Updates the details of an existing driver.
+// @Tags         drivers
+// @Accept       json
+// @Produce      json
+// @Param        driver  body      UpdateDriverRequest  true  "Driver update data"
+// @Success      200  {object}  UpdateDriverResponse
+// @Failure 400 {object} ErrorResponse "Invalid request"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router       /drivers/update [put]
 func (h *UpdateDriverHandler) Handle(ctx context.Context, req *UpdateDriverRequest) (*UpdateDriverResponse, error) {
 	driver := &domain.Driver{
 		ID:        req.ID,

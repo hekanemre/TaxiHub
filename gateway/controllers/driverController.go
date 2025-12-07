@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	application "github.com/hekanemre/taxihub/application/driver"
 	"github.com/hekanemre/taxihub/infrastructure"
+	"go.uber.org/zap"
 )
 
 func CreateDriver(driverRepo *infrastructure.MongoRepository) fiber.Handler {
@@ -16,21 +17,25 @@ func CreateDriver(driverRepo *infrastructure.MongoRepository) fiber.Handler {
 
 		var validationReq application.GetDriverByPlateRequest
 		if err := c.BodyParser(&validationReq); err != nil {
+			zap.L().Error("Failed to parse request body for validation", zap.Error(err))
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
 		}
 		validationRes, validationErr := GetDriverByPlateHandler.Handle(c.UserContext(), &validationReq)
 
 		if validationErr == nil && validationRes != nil {
+			zap.L().Error("Driver with the same plate already exists", zap.String("plate", validationReq.Plate))
 			return c.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "Driver with the same plate already exists"})
 		}
 
 		var req application.CreateDriverRequest
 		if err := c.BodyParser(&req); err != nil {
+			zap.L().Error("Failed to parse request body", zap.Error(err))
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
 		}
 
 		res, err := createDriverHandler.Handle(c.UserContext(), &req)
 		if err != nil {
+			zap.L().Error("Failed to create driver", zap.Error(err))
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 
@@ -44,10 +49,12 @@ func UpdateDriver(driverRepo *infrastructure.MongoRepository) fiber.Handler {
 		updateDriverHandler := application.NewUpdateDriverHandler(driverRepo)
 		var req application.UpdateDriverRequest
 		if err := c.BodyParser(&req); err != nil {
+			zap.L().Error("Failed to parse request body", zap.Error(err))
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
 		}
 		res, err := updateDriverHandler.Handle(c.UserContext(), &req)
 		if err != nil {
+			zap.L().Error("Failed to update driver", zap.Error(err))
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 		return c.Status(fiber.StatusOK).JSON(res)
@@ -69,6 +76,7 @@ func GetAllDrivers(driverRepo *infrastructure.MongoRepository) fiber.Handler {
 
 		res, err := getAllDriversHandler.Handle(c.UserContext(), &req)
 		if err != nil {
+			zap.L().Error("Failed to get all drivers", zap.Error(err))
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 		return c.Status(fiber.StatusOK).JSON(res)
@@ -82,19 +90,23 @@ func GetAllDriversNearby(driverRepo *infrastructure.MongoRepository) fiber.Handl
 
 		latStr := c.Params("lat")
 		if latStr == "" {
+			zap.L().Error("Missing 'lat' query parameter")
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Missing 'lat' query parameter"})
 		}
 		lat, err := strconv.ParseFloat(latStr, 64)
 		if err != nil {
+			zap.L().Error("Invalid 'lat' query parameter", zap.Error(err))
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid 'lat' query parameter"})
 		}
 
 		lonStr := c.Params("lon")
 		if lonStr == "" {
+			zap.L().Error("Missing 'lon' query parameter")
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Missing 'lon' query parameter"})
 		}
 		lon, err := strconv.ParseFloat(lonStr, 64)
 		if err != nil {
+			zap.L().Error("Invalid 'lon' query parameter", zap.Error(err))
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid 'lon' query parameter"})
 		}
 
@@ -111,6 +123,7 @@ func GetAllDriversNearby(driverRepo *infrastructure.MongoRepository) fiber.Handl
 
 		res, err := getAllDriversNearbyHandler.Handle(c.UserContext(), req)
 		if err != nil {
+			zap.L().Error("Failed to get all nearby drivers", zap.Error(err))
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 
@@ -127,12 +140,14 @@ func GetDriverByID(driverRepo *infrastructure.MongoRepository) fiber.Handler {
 
 		id := c.Params("id")
 		if id == "" {
+			zap.L().Error("Missing 'id' parameter")
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "missing id parameter"})
 		}
 		req.ID = id
 
 		res, err := getDriverByIDHandler.Handle(c.UserContext(), &req)
 		if err != nil {
+			zap.L().Error("Failed to get driver by ID", zap.Error(err))
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 		return c.Status(fiber.StatusOK).JSON(res)

@@ -10,10 +10,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/hekanemre/taxihub/application/healthcheck"
 	"github.com/hekanemre/taxihub/config"
+	_ "github.com/hekanemre/taxihub/docs"
 	"github.com/hekanemre/taxihub/gateway/helpers"
 	"github.com/hekanemre/taxihub/gateway/routes"
 	"github.com/hekanemre/taxihub/infrastructure"
 	"github.com/hekanemre/taxihub/log"
+	fiberswagger "github.com/swaggo/fiber-swagger"
 	"go.uber.org/zap"
 )
 
@@ -108,6 +110,7 @@ func main() {
 	}
 	tokenHelper := helpers.NewTokenHelper(userRepo)
 
+	app.Get("/swagger/*", fiberswagger.WrapHandler)
 	healthCheckHandler := healthcheck.NewHealthCheckHandler()
 	app.Get("/health", handle[healthcheck.HealthCheckRequest, healthcheck.HealthCheckResponse](healthCheckHandler))
 

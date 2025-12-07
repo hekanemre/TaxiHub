@@ -1,0 +1,397 @@
+definitions:
+  application.CreateDriverRequest:
+    properties:
+      carBrand:
+        type: string
+      carModel:
+        type: string
+      createdAt:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      location:
+        $ref: '#/definitions/domain.Location'
+      plate:
+        type: string
+      taksiType:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  application.CreateDriverResponse:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  application.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  application.GetAllDriverNearbyResponse:
+    properties:
+      distanceKm:
+        type: number
+      firstName:
+        type: string
+      lastName:
+        type: string
+      plate:
+        type: string
+    type: object
+  application.GetAllDriverResponse:
+    properties:
+      drivers:
+        items:
+          $ref: '#/definitions/domain.Driver'
+        type: array
+    type: object
+  application.GetDriverResponse:
+    properties:
+      driver:
+        $ref: '#/definitions/domain.Driver'
+    type: object
+  application.UpdateDriverRequest:
+    properties:
+      carBrand:
+        type: string
+      carModel:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      location:
+        $ref: '#/definitions/domain.Location'
+      plate:
+        type: string
+      taksiType:
+        type: string
+    type: object
+  application.UpdateDriverResponse:
+    properties:
+      driver:
+        $ref: '#/definitions/domain.Driver'
+    type: object
+  domain.Driver:
+    properties:
+      carBrand:
+        type: string
+      carModel:
+        type: string
+      createdAt:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      location:
+        $ref: '#/definitions/domain.Location'
+      plate:
+        type: string
+      taxiType:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  domain.Location:
+    properties:
+      coordinates:
+        items:
+          type: number
+        type: array
+      type:
+        type: string
+    type: object
+  domain.User:
+    properties:
+      Password:
+        minLength: 6
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      id:
+        type: string
+      last_name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      phone:
+        type: string
+      refresh_token:
+        type: string
+      token:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      user_type:
+        type: string
+    required:
+    - Password
+    - email
+    - first_name
+    - last_name
+    - phone
+    - user_type
+    type: object
+info:
+  contact: {}
+paths:
+  /drivers/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new driver with the provided details.
+      parameters:
+      - description: Driver creation data
+        in: body
+        name: driver
+        required: true
+        schema:
+          $ref: '#/definitions/application.CreateDriverRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/application.CreateDriverResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+      summary: Create a new driver
+      tags:
+      - drivers
+  /drivers/getall:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list of all drivers.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/application.GetAllDriverResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+      summary: Get all drivers
+      tags:
+      - drivers
+  /drivers/getallnearby:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of all nearby drivers based on location and taxi
+        type.
+      parameters:
+      - description: Latitude
+        format: float64
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Longitude
+        format: float64
+        in: query
+        name: lon
+        required: true
+        type: number
+      - description: Type of taxi
+        in: query
+        name: taxiType
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/application.GetAllDriverNearbyResponse'
+            type: array
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+      summary: Get all nearby drivers
+      tags:
+      - drivers
+  /drivers/getbyid/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a driver's details by their unique ID.
+      parameters:
+      - description: Driver ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/application.GetDriverResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+      summary: Get driver by ID
+      tags:
+      - drivers
+  /drivers/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of an existing driver.
+      parameters:
+      - description: Driver update data
+        in: body
+        name: driver
+        required: true
+        schema:
+          $ref: '#/definitions/application.UpdateDriverRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/application.UpdateDriverResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/application.ErrorResponse'
+      summary: Update an existing driver
+      tags:
+      - drivers
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns their details.
+      parameters:
+      - description: User login data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/domain.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User login
+      tags:
+      - auth
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user in the system.
+      parameters:
+      - description: User signup data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/domain.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User signup
+      tags:
+      - auth
+swagger: "2.0"

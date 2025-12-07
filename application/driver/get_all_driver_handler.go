@@ -25,6 +25,18 @@ func NewGetAllDriverHandler(repo Repository) *GetAllDriverHandler {
 	}
 }
 
+// GetAllDriver godoc
+// @Summary      Get all drivers
+// @Description  Retrieves a paginated list of all drivers.
+// @Tags         drivers
+// @Accept       json
+// @Produce      json
+// @Param        page       query     int     false  "Page number"       default(1)
+// @Param        page_size  query     int     false  "Number of items per page" default(10)
+// @Success      200  {object}  GetAllDriverResponse
+// @Failure 400 {object} ErrorResponse "Invalid request"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router       /drivers/getall [get]
 func (h *GetAllDriverHandler) Handle(ctx context.Context, req *GetAllFilterRequest) (*GetAllDriverResponse, error) {
 	drivers, err := h.repo.GetAllDrivers(ctx, req.Page, req.PageSize)
 	if err != nil {
