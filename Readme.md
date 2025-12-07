@@ -6,8 +6,8 @@ A Go-based microservice with MongoDb integration, logging, and API Gateway manag
 
 # Prerequisites
 
-Go 1.23.4
-Docker and Docker Compose
+- Go 1.23.4
+- Docker and Docker Compose
 
 # Tech Stack
 
