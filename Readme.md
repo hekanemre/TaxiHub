@@ -21,7 +21,7 @@ Docker and Docker Compose
 
 
 # Project Structure 
-
+```
 ├── application
 │   ├── driver
 │   │   ├── create_driver_handler.go
@@ -69,17 +69,18 @@ Docker and Docker Compose
 ├── go.sum
 ├── main.go
 └── Readme.md
-
+```
 # Getting Started
 
 1. Clone the repository:
-
+```
 git clone https://github.com/hekanemre/TaxiHub
-
+```
 2. Start the required services using Docker Compose:
-
+```
 docker-compose up -d
-
+```
 3. Run the application:
-
+```
 go run main.go
+```
