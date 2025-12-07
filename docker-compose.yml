@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: taxihub-app
+    ports:
+      - "8080:9000"
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    container_name: taxihub-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

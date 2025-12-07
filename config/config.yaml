@@ -1,0 +1,13 @@
+port: 9000
+
+mongodb:
+  #this is for docker in debug mode we need to change it
+  host: "mongodb://taxihub-mongo:27017" 
+  # host: "mongodb://localhost:27017"
+  dbname: "taxihub"
+
+idleTimeout: 5s
+readTimeout: 3s
+writeTimeout: 3s
+
+nearbyDistance: 6000 # equal 6km
